@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wisata_candi_virlianyjessicaputri/data/candi_data.dart';
 import 'package:wisata_candi_virlianyjessicaputri/screens/detail_screen.dart';
+import 'package:wisata_candi_virlianyjessicaputri/screens/profile_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +19,8 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: DetailScreen(candi: candiList[0],),
+      // home: DetailScreen(candi: candiList[0],),
+      home: ProfileScreen(),
     );
   }
 }
