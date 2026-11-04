@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart'; // Tambahkan import provider
 import 'package:wisata_candi_virlianyjessicaputri/models/candi.dart';
 import 'package:wisata_candi_virlianyjessicaputri/widgets/detail_header.dart';
+import 'package:wisata_candi_virlianyjessicaputri/providers/favorite_provider.dart'; // Sesuaikan path jika perlu
 
 class DetailScreen extends StatelessWidget {
   final Candi candi;
@@ -9,6 +11,11 @@ class DetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Membaca status favorit menggunakan Provider
+    final bool isFav = context
+        .watch<FavoriteProvider>()
+        .isFavorite(candi.name);
+
     return Scaffold(
       // Mencegah overflow dengan membungkus Column di dalam SingleChildScrollView
       body: SingleChildScrollView(
@@ -37,8 +44,16 @@ class DetailScreen extends StatelessWidget {
                         ),
                       ),
                       IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.favorite_border),
+                        onPressed: () {
+                          // Mengubah status favorit via Provider
+                          context
+                              .read<FavoriteProvider>()
+                              .toggle(candi.name);
+                        },
+                        icon: Icon(
+                          isFav ? Icons.favorite : Icons.favorite_border,
+                          color: isFav ? Colors.red : null,
+                        ),
                       ),
                     ],
                   ),

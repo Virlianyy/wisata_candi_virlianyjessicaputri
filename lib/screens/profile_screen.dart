@@ -1,34 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wisata_candi_virlianyjessicaputri/providers/auth_provider.dart';
+import 'package:wisata_candi_virlianyjessicaputri/providers/favorite_provider.dart';
+import 'package:wisata_candi_virlianyjessicaputri/screens/sign_in_screen.dart'; // Impor SignInScreen
+import 'package:wisata_candi_virlianyjessicaputri/widgets/profile_info_item.dart';
 
-class ProfileScreen extends StatefulWidget {
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  // TODO: 1. Deklarasikan variabel yang dibutuhkan
-  bool isSignedIn = false;
-  String fullName = '';
-  String userName = '';
-  int favoriteCandiCount = 0;
-
-  // TODO: 5 & 6. Implementasi fungsi signIn dan signOut
-  void signIn() {
-    setState(() {
-      isSignedIn = !isSignedIn;
-    });
-  }
-
-  void signOut() {
-    setState(() {
-      isSignedIn = !isSignedIn;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Mengambil state dari AuthProvider & FavoriteProvider secara real-time
+    final auth = context.watch<AuthProvider>();
+    final int favoriteCount = context.watch<FavoriteProvider>().count;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -43,11 +28,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  // TODO: 2. Buat ProfileHeader (foto profil)
+                  // ProfileHeader (Foto profil & ikon kamera)
                   Align(
                     alignment: Alignment.topCenter,
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 200 - 50 - 24), // Penyesuaian tinggi dari atas
+                      padding: const EdgeInsets.only(top: 150),
                       child: Stack(
                         alignment: Alignment.bottomRight,
                         children: [
@@ -64,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               backgroundImage: AssetImage('images/placeholder_image.png'),
                             ),
                           ),
-                          if (isSignedIn)
+                          if (auth.isSignedIn)
                             IconButton(
                               onPressed: () {},
                               icon: Icon(
@@ -78,115 +63,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 40),
 
-                  // TODO: 3. Buat ProfileInfo (info pengguna)
-                  // Baris 1: Pengguna
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 3,
-                        child: const Row(
-                          children: [
-                            Icon(Icons.lock, color: Colors.amber),
-                            SizedBox(width: 8),
-                            Text(
-                              'Pengguna',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          ': ${isSignedIn ? userName : ''}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ),
-                    ],
+                  // ProfileInfo (Informasi Pengguna)
+                  ProfileInfoItem(
+                    icon: Icons.lock,
+                    label: 'Pengguna',
+                    value: auth.isSignedIn ? auth.username : '',
+                    iconColor: Colors.amber,
                   ),
                   const SizedBox(height: 4),
                   Divider(color: Colors.deepPurple[100]),
                   const SizedBox(height: 4),
 
-                  // Baris 2: Nama
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 3,
-                        child: const Row(
-                          children: [
-                            Icon(Icons.person, color: Colors.blue),
-                            SizedBox(width: 8),
-                            Text(
-                              'Nama',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          ': ${isSignedIn ? fullName : ''}',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ),
-                      if (isSignedIn) const Icon(Icons.edit),
-                    ],
+                  ProfileInfoItem(
+                    icon: Icons.person,
+                    label: 'Nama',
+                    value: auth.isSignedIn ? auth.username : '',
+                    showEditIcon: auth.isSignedIn,
+                    onEditPressed: () {
+                      debugPrint('Icon edit ditekan');
+                    },
+                    iconColor: Colors.blue,
                   ),
                   const SizedBox(height: 4),
                   Divider(color: Colors.deepPurple[100]),
                   const SizedBox(height: 4),
 
-                  // Baris 3: Favorit
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width / 3,
-                        child: const Row(
-                          children: [
-                            Icon(Icons.favorite, color: Colors.red),
-                            SizedBox(width: 8),
-                            Text(
-                              'Favorit',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          ': $favoriteCandiCount',
-                          style: const TextStyle(fontSize: 18),
-                        ),
-                      ),
-                    ],
+                  // Baris Favorit terhubung langsung dengan FavoriteProvider
+                  ProfileInfoItem(
+                    icon: Icons.favorite,
+                    label: 'Favorit',
+                    value: favoriteCount > 0 ? '$favoriteCount' : '',
+                    iconColor: Colors.red,
                   ),
                   const SizedBox(height: 4),
                   Divider(color: Colors.deepPurple[100]),
                   const SizedBox(height: 20),
 
-                  // TODO: 4. Buat ProfileActions (tombol sign in/out)
-                  isSignedIn
+                  // ProfileActions (Tombol Sign In / Sign Out)
+                  auth.isSignedIn
                       ? TextButton(
-                    onPressed: signOut,
+                    onPressed: () {
+                      context.read<AuthProvider>().signOut();
+                    },
                     child: const Text(
                       'Sign Out',
-                      style: TextStyle(fontSize: 18, color: Colors.deepPurple),
+                      style: TextStyle(fontSize: 16, color: Colors.deepPurple),
                     ),
                   )
                       : TextButton(
-                    onPressed: signIn,
+                    onPressed: () {
+                      // Navigasi aktif ke SignInScreen
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const SignInScreen()),
+                      );
+                    },
                     child: const Text(
                       'Sign In',
-                      style: TextStyle(fontSize: 18, color: Colors.deepPurple),
+                      style: TextStyle(fontSize: 16, color: Colors.deepPurple),
                     ),
                   ),
                 ],
