@@ -1,6 +1,7 @@
+import 'package:flutter/gestures.dart'; // Tambahkan import ini untuk TapGestureRecognizer
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wisata_candi_virlianyjessicaputri/providers/auth_provider.dart'; // 1. Wajib impor AuthProvider
+import 'package:wisata_candi_virlianyjessicaputri/providers/auth_provider.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -10,27 +11,20 @@ class SignInScreen extends StatefulWidget {
 }
 
 class _SignInScreenState extends State<SignInScreen> {
-  // Controller untuk membaca inputan teks[cite: 3]
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
   String _errorText = '';
   bool _obscurePassword = true;
 
-  // Fungsi Logika Sign In[cite: 1, 3]
   void _signIn() {
     final String username = _usernameController.text.trim();
     final String password = _passwordController.text.trim();
 
-    // Memastikan kolom nama pengguna dan password diisi[cite: 3]
     if (username.isNotEmpty && password.isNotEmpty) {
-      // Menyimpan nama pengguna ke AuthProvider & mengubah isSignedIn jadi true
       context.read<AuthProvider>().signIn(username);
-
-      // Menutup halaman SignInScreen dan kembali ke ProfileScreen
-      Navigator.pop(context);
+      Navigator.pop(context); // Kembali ke ProfileScreen
     } else {
-      // Tampilkan error jika ada kolom yang kosong[cite: 3]
       setState(() {
         _errorText = 'Nama pengguna dan kata sandi tidak boleh kosong';
       });
@@ -49,7 +43,6 @@ class _SignInScreenState extends State<SignInScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Kolom Input Nama Pengguna[cite: 3]
                   TextFormField(
                     controller: _usernameController,
                     decoration: const InputDecoration(
@@ -58,8 +51,6 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // Kolom Input Kata Sandi[cite: 3]
                   TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
@@ -82,11 +73,34 @@ class _SignInScreenState extends State<SignInScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
-                  // Tombol Sign In (Menghubungkan ke _signIn)[cite: 1, 3]
                   ElevatedButton(
-                    onPressed: _signIn, // <-- Memanggil fungsi _signIn di atas[cite: 1, 3]
+                    onPressed: _signIn,
                     child: const Text('Sign In'),
+                  ),
+                  const SizedBox(height: 10),
+                  // Tautan Navigasi ke SignUpScreen
+                  RichText(
+                    text: TextSpan(
+                      text: 'Belum punya akun? ',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.deepPurple,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: 'Daftar di sini.',
+                          style: const TextStyle(
+                            color: Colors.blue,
+                            decoration: TextDecoration.underline,
+                            fontSize: 16,
+                          ),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Navigator.pushNamed(context, '/signup');
+                            },
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),

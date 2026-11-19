@@ -40,7 +40,10 @@ class DetailHeader extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                // Kembali ke halaman sebelumnya (HomeScreen)
+                Navigator.pop(context);
+              },
               icon: const Icon(Icons.arrow_back),
             ),
           ),
